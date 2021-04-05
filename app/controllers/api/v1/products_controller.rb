@@ -1,8 +1,9 @@
 module Api
   module V1
-    class ProductsController < ApplicationController  
+    class ProductsController < ApplicationController
+      MAX_PAGINATION_LIMIMT = 100
       def index
-        products = Product.all
+        products = Product.limit(limit).offset(params[:offset])
 
         render json: ProductsRepresenter.new(products).as_json
       end
@@ -24,6 +25,13 @@ module Api
       end
 
       private
+
+      def limit
+        [
+          params.fetch(:limit, MAX_PAGINATION_LIMIMT).to_i,
+          MAX_PAGINATION_LIMIMT
+        ].min
+      end
 
       def product_params
       	params.require(:product).permit(:name, :category_id)
