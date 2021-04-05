@@ -3,6 +3,23 @@ require 'rails_helper'
 describe 'Products Api', type: :request do
   let!(:category) { FactoryBot.create(:category, name: 'Higiene Pessoal') }
   
+  describe 'POST /products' do
+    it 'create a new product' do
+      expect {
+        post '/api/v1/products', params: { product: { name: 'Escova Dental', category_id: category.id} }
+      }.to change { Product.count }.from(0).to(1)
+
+      expect(response).to have_http_status(:created)
+      expect(response_body).to eq(
+        {
+          'id' => 1,
+          'name' => 'Escova Dental',
+          'category' => 'Higiene Pessoal'
+        }
+      )
+    end
+  end
+
   describe 'GET /products' do
     before do
       FactoryBot.create(:product, name: 'Papel Higiênico', category_id: category.id)
@@ -13,18 +30,22 @@ describe 'Products Api', type: :request do
       get '/api/v1/products'
 
   		expect(response).to have_http_status(:success) 
-      expect(JSON.parse(response.body).size).to eq(2)
+      expect(response_body.size).to eq(2)
+      expect(response_body).to eq(
+        [
+          {
+          'id' => 2,
+          'name' => 'Papel Higiênico',
+          'category' => 'Higiene Pessoal'
+          },
+          {
+            'id' => 3,
+            'name' => 'Cotonete',
+            'category' => 'Higiene Pessoal'
+          }
+        ]
+      )
   	end
-  end
-
-  describe 'POST /products' do
-    it 'create a new product' do
-      expect {
-        post '/api/v1/products', params: { product: { name: 'Escova Dental', category_id: category.id} }
-      }.to change { Product.count }.from(0).to(1)
-
-      expect(response).to have_http_status(:created)
-    end
   end
 
   describe 'DELETE /products/:id' do
