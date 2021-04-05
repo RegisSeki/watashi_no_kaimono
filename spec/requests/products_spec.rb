@@ -46,6 +46,38 @@ describe 'Products Api', type: :request do
         ]
       )
   	end
+
+    it 'returns a subset of products based on limit' do
+      get '/api/v1/products', params: { limit: 1 }
+
+      expect(response).to have_http_status(:success) 
+      expect(response_body.size).to eq(1)
+      expect(response_body).to eq(
+        [
+          {
+          'id' => 4,
+          'name' => 'Papel Higiênico',
+          'category' => 'Higiene Pessoal'
+          }
+        ]
+      )
+    end
+
+    it 'returns a subset of products based on limit and offset' do
+      get '/api/v1/products', params: { limit: 1, offset: 1 }
+
+      expect(response).to have_http_status(:success) 
+      expect(response_body.size).to eq(1)
+      expect(response_body).to eq(
+        [
+          {
+          'id' => 7,
+          'name' => 'Cotonete',
+          'category' => 'Higiene Pessoal'
+          }
+        ]
+      )
+    end
   end
 
   describe 'DELETE /products/:id' do
