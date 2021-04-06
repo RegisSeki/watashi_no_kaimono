@@ -3,13 +3,14 @@ require 'rails_helper'
 describe 'Authentication', type: :request do
   describe 'POST /authenticate' do
     let(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+    let!(:jwt) { AuthenticationTokenService.call(user.id) }
 
     it 'authenticate the client' do
       post '/api/v1/authenticate', params: { username: user.username, password: 'thecat' }
 
       expect(response).to have_http_status(:created)
       expect(response_body).to eq({
-        'token' => 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.DiPWrOKsx3sPeVClrm_j07XNdSYHgBa3Qctosdxax3w'
+        'token' => jwt
       })
     end
 
