@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   	namespace :v1 do
   		resources :products, only: [:index, :create, :destroy]
       resources :categories, only: [:index, :create, :destroy]
+
+      post 'authenticate', to: 'authentication#create'
   	end
   end
 end
