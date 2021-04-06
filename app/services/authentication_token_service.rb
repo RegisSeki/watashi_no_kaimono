@@ -1,6 +1,6 @@
 class AuthenticationTokenService
-  HMAC_SECRET = 'my$ecretK3y'
-  ALGORITHM_TYPE = 'HS256'
+  HMAC_SECRET = Rails.application.credentials.hmac_secret
+  ALGORITHM_TYPE = Rails.application.credentials.algorithm_type
 
   def self.call(user_id)
     payload = {user_id: user_id}

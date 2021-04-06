@@ -1,10 +1,17 @@
 require 'rails_helper'
 
 describe 'Categories Api', type: :request do
+  let!(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+  let!(:jwt) { AuthenticationTokenService.call(user.id) }
+  
   describe 'POST /categories' do
     it 'create a new category' do
       expect {
-        post '/api/v1/categories', params: { category: { name: 'Higiene Pessoal' }}
+        post '/api/v1/categories', params: { 
+          category: { 
+            name: 'Higiene Pessoal' 
+          }
+        }, headers: { "Authorization" => "Bearer #{jwt}" }
       }.to change { Category.count }.from(0).to(1)
 
       expect(response).to have_http_status(:created)
@@ -48,7 +55,7 @@ describe 'Categories Api', type: :request do
 
     it 'deletes a category' do
       expect {
-        delete "/api/v1/categories/#{category.id}"
+        delete "/api/v1/categories/#{category.id}", headers: { "Authorization" => "Bearer #{jwt}" }
       }.to change { Category.count }.from(1).to(0)
 
       expect(response).to have_http_status(:no_content)
