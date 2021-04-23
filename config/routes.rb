@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :create, :destroy]
 
       post 'authenticate', to: 'authentication#create'
+      post 'refresh_token', to: 'authentication#refresh'
   	end
   end
 end

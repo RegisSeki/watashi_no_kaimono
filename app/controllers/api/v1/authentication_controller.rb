@@ -5,12 +5,21 @@ module Api
 
       rescue_from ActionController::ParameterMissing, with: :parameter_missing
       rescue_from AuthenticationError, with: :handle_unaunthenticated
-      
-      def create        
+
+      def create
         raise AuthenticationError unless user.authenticate(params.require(:password))
-        token = AuthenticationTokenService.call(user.id)
+
+        token = AuthenticationService.encode_token(user.id)
 
         render json: { token: token }, status: :created
+      end
+
+      def refresh
+        new_token = AuthenticationService.refresh_token(params['token'])
+
+        render json: { token: new_token }, status: :created
+        rescue
+          render status: :unauthorized
       end
 
       private

@@ -3,16 +3,16 @@ require 'rails_helper'
 describe 'Products Api', type: :request do
   let!(:category) { FactoryBot.create(:category, name: 'Higiene Pessoal') }
   let!(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
-  let!(:jwt) { AuthenticationTokenService.call(user.id) }
-  
+  let!(:jwt) { AuthenticationService.encode_token(user.id) }
+
   describe 'POST /products' do
     it 'create a new product' do
       expect {
         post '/api/v1/products', params: {
-          product: { 
-            name: 'Escova Dental', 
+          product: {
+            name: 'Escova Dental',
             category_id: category.id
-          } 
+          }
         }, headers: { "Authorization" => "Bearer #{jwt}" }
       }.to change { Product.count }.from(0).to(1)
 
@@ -33,10 +33,10 @@ describe 'Products Api', type: :request do
       FactoryBot.create(:product, name: 'Cotonete', category_id: category.id)
     end
 
-  	it 'returns all products' do  		
+  	it 'returns all products' do
       get '/api/v1/products'
 
-  		expect(response).to have_http_status(:success) 
+  		expect(response).to have_http_status(:success)
       expect(response_body.size).to eq(2)
       expect(response_body).to eq(
         [
@@ -57,7 +57,7 @@ describe 'Products Api', type: :request do
     it 'returns a subset of products based on limit' do
       get '/api/v1/products', params: { limit: 1 }
 
-      expect(response).to have_http_status(:success) 
+      expect(response).to have_http_status(:success)
       expect(response_body.size).to eq(1)
       expect(response_body).to eq(
         [
@@ -73,7 +73,7 @@ describe 'Products Api', type: :request do
     it 'returns a subset of products based on limit and offset' do
       get '/api/v1/products', params: { limit: 1, offset: 1 }
 
-      expect(response).to have_http_status(:success) 
+      expect(response).to have_http_status(:success)
       expect(response_body.size).to eq(1)
       expect(response_body).to eq(
         [
