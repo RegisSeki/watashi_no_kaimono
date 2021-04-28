@@ -8,12 +8,14 @@ module Api
       end
 
       def create
-        user = User.new(user_params)
+        begin
+          user = User.new(user_params)
 
-        if user.save!
+          user.save!
+          UserMailer.with(user: user).validation_email.deliver_later
           render json: user, status: :created
-        else
-          render json: user.errors, status: :unprocessable_entity
+        rescue => e
+          render json: e.message, status: :unprocessable_entity
         end
       end
 
@@ -23,10 +25,10 @@ module Api
         head :no_content
       end
 
-      private 
+      private
 
       def user_params
-        params.require(:user).permit(:username, :password)
+        params.require(:user).permit(:username, :email, :password, :password_confirmation)
       end
     end
   end

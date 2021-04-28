@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe AuthenticationService do
   describe '.encode_token' do
-    let(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+    let(:user) { FactoryBot.create(:user, username: 'Yuki', email: 'yuki@cat.com', password: 'thecat', password_confirmation: 'thecat') }
     let(:token) { described_class.encode_token(user.id) }
 
     it 'returns an authentication token' do
@@ -20,7 +20,7 @@ describe AuthenticationService do
   end
 
   describe '.authenticate_token' do
-    let!(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+    let(:user) { FactoryBot.create(:user, username: 'Yuki', email: 'yuki@cat.com', password: 'thecat', password_confirmation: 'thecat') }
     let!(:token) { described_class.encode_token(user.id) }
 
     it 'raise when token date is expired' do
