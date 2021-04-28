@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe 'Products Api', type: :request do
   let!(:category) { FactoryBot.create(:category, name: 'Higiene Pessoal') }
-  let!(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+  let(:user) { FactoryBot.create(:user, username: 'Yuki', email: 'yuki@cat.com', password: 'thecat', password_confirmation: 'thecat') }
   let!(:jwt) { AuthenticationService.encode_token(user.id) }
 
   describe 'POST /products' do

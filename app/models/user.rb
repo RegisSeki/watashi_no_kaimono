@@ -1,5 +1,7 @@
 class User < ApplicationRecord
-  validates :password, length: { minimum: 6 }, allow_nil: true
+  validates :password, length: { minimum: 6 },presence: true, confirmation: true, :on => :create
+  validates :password_confirmation, presence: true, :on => :create
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, :on => :create
   has_secure_password
 
   def self.update_token_date(user_id)

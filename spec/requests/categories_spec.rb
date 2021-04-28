@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe 'Categories Api', type: :request do
-  let!(:user) { FactoryBot.create(:user, username: 'Yuki', password: 'thecat') }
+  let(:user) { FactoryBot.create(:user, username: 'Yuki', email: 'yuki@cat.com', password: 'thecat', password_confirmation: 'thecat') }
   let!(:jwt) { AuthenticationService.encode_token(user.id) }
 
   describe 'POST /categories' do

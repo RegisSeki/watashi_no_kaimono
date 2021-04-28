@@ -1,6 +1,6 @@
 class AuthenticationService
-  HMAC_SECRET = Rails.application.credentials.hmac_secret
-  ALGORITHM_TYPE = Rails.application.credentials.algorithm_type
+  HMAC_SECRET = Rails.application.credentials.token[:hmac_secret]
+  ALGORITHM_TYPE = Rails.application.credentials.token[:algorithm_type]
   TOKEN_EXPIRATION_SECONDS = 86400
 
   def self.encode_token(user_id)
