@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 describe 'Products Api', type: :request do
-  let!(:category) { FactoryBot.create(:category, name: 'Higiene Pessoal') }
+  let!(:category) { FactoryBot.create(:category, name: 'Higiene Pessoal', description: 'Limpeza do corpo') }
+  let!(:subcategory) { FactoryBot.create(:subcategory, name: 'Banho', description: 'Sabonete corpo', category_id: category.id) }
   let(:user) { FactoryBot.create(:user, username: 'Yuki', email: 'yuki@cat.com', password: 'thecat', password_confirmation: 'thecat') }
   let!(:jwt) { AuthenticationService.encode_token(user.id) }
 
@@ -10,28 +11,50 @@ describe 'Products Api', type: :request do
       expect {
         post '/api/v1/products', params: {
           product: {
-            name: 'Escova Dental',
-            category_id: category.id
+            name: 'Sabonete Dove Barra',
+            subcategory_id: subcategory.id
           }
         }, headers: { "Authorization" => "Bearer #{jwt}" }
       }.to change { Product.count }.from(0).to(1)
 
+      created_product = Product.last
       expect(response).to have_http_status(:created)
       expect(response_body).to eq(
         {
-          'id' => 1,
-          'name' => 'Escova Dental',
-          'category' => 'Higiene Pessoal'
+          'id' => created_product.id,
+          'name' => 'Sabonete Dove Barra',
+          'category' => 'Higiene Pessoal',
+          'subcategory' => 'Banho'
+        }
+      )
+    end
+  end
+
+  describe 'UPDATE /products/:id' do
+    let!(:product) { FactoryBot.create(:product, name: 'Sabonete', subcategory_id: subcategory.id) }
+
+    it 'update a product name' do
+      put "/api/v1/products/#{product.id}", params: {
+        product: {
+          name: 'Sabonete Protex Limpeza Profunda'
+        }
+      }, headers: { "Authorization" => "Bearer #{jwt}" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response_body).to eq(
+        {
+          'id' => product.id,
+          'name' => 'Sabonete Protex Limpeza Profunda',
+          'category' => 'Higiene Pessoal',
+          'subcategory' => 'Banho'
         }
       )
     end
   end
 
   describe 'GET /products' do
-    before do
-      FactoryBot.create(:product, name: 'Papel Higiênico', category_id: category.id)
-      FactoryBot.create(:product, name: 'Cotonete', category_id: category.id)
-    end
+    let!(:product_1) { FactoryBot.create(:product, name: 'Papel Higiênico', subcategory_id: subcategory.id) }
+    let!(:product_2) { FactoryBot.create(:product, name: 'Cotonete', subcategory_id: subcategory.id) }
 
   	it 'returns all products' do
       get '/api/v1/products'
@@ -41,14 +64,16 @@ describe 'Products Api', type: :request do
       expect(response_body).to eq(
         [
           {
-          'id' => 2,
+          'id' => product_1.id,
           'name' => 'Papel Higiênico',
-          'category' => 'Higiene Pessoal'
+          'category' => 'Higiene Pessoal',
+          'subcategory' => 'Banho'
           },
           {
-            'id' => 3,
+            'id' => product_2.id,
             'name' => 'Cotonete',
-            'category' => 'Higiene Pessoal'
+            'category' => 'Higiene Pessoal',
+            'subcategory' => 'Banho'
           }
         ]
       )
@@ -62,9 +87,10 @@ describe 'Products Api', type: :request do
       expect(response_body).to eq(
         [
           {
-          'id' => 4,
+          'id' => product_1.id,
           'name' => 'Papel Higiênico',
-          'category' => 'Higiene Pessoal'
+          'category' => 'Higiene Pessoal',
+          'subcategory' => 'Banho'
           }
         ]
       )
@@ -78,9 +104,10 @@ describe 'Products Api', type: :request do
       expect(response_body).to eq(
         [
           {
-          'id' => 7,
+          'id' => product_2.id,
           'name' => 'Cotonete',
-          'category' => 'Higiene Pessoal'
+          'category' => 'Higiene Pessoal',
+          'subcategory' => 'Banho'
           }
         ]
       )
@@ -88,7 +115,7 @@ describe 'Products Api', type: :request do
   end
 
   describe 'DELETE /products/:id' do
-    let!(:product) { FactoryBot.create(:product, name: 'Escova Dental', category_id: category.id) }
+    let!(:product) { FactoryBot.create(:product, name: 'Escova Dental', subcategory_id: subcategory.id) }
 
     it 'deletes a product' do
       expect {
