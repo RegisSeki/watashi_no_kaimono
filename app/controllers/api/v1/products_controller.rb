@@ -3,7 +3,7 @@ module Api
     class ProductsController < ApplicationController
       MAX_PAGINATION_LIMIMT = 100
 
-      before_action :authenticate_user, only: [:create, :destroy]
+      before_action :authenticate_user, only: [:create, :update, :destroy]
 
       def index
         products = Product.limit(limit).offset(params[:offset])
@@ -21,10 +21,20 @@ module Api
       	end
       end
 
+      def update
+        product = Product.find(params[:id])
+
+        if product.update(product_params)
+          render json: ProductRepresenter.new(product).as_json, status: :ok
+        else
+          render json: product.errors, status: :unprocessable_entity
+        end
+      end
+
       def destroy
       	Product.find(params[:id]).destroy!
 
-      	head :no_content  	
+      	head :no_content
       end
 
       private
@@ -37,7 +47,7 @@ module Api
       end
 
       def product_params
-      	params.require(:product).permit(:name, :category_id)
+      	params.require(:product).permit(:name, :subcategory_id)
       end
     end
   end

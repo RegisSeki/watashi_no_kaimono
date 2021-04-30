@@ -1,8 +1,8 @@
 module Api
   module V1
     class CategoriesController < ApplicationController
-      before_action :authenticate_user, only: [:create, :destroy]
-      
+      before_action :authenticate_user, only: [:create, :update, :destroy]
+
       def index
         categories = Category.all
 
@@ -19,6 +19,17 @@ module Api
         end
       end
 
+      def update
+        category = Category.find(params[:id])
+
+        if category.update(category_params)
+
+          render json: CategoryRepresenter.new(category).as_json, status: :ok
+        else
+          render json: category.errors, status: :unprocessable_entity
+        end
+      end
+
       def destroy
         Category.find(params[:id]).destroy!
 
@@ -28,7 +39,7 @@ module Api
       private
 
       def category_params
-        params.require(:category).permit(:name)
+        params.require(:category).permit(:name, :description)
       end
     end
   end
