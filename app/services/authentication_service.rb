@@ -25,6 +25,8 @@ class AuthenticationService
 
     raise 'Token date is not valid!' unless token_date_is_valid?(date)
     raise 'User is not authenticated!' unless User.is_authenticated?(user_id, date)
+
+    user_id
   end
 
   def self.refresh_token(token)

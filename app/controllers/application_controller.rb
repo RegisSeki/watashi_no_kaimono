@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 
   def authenticate_user
     token, _options = token_and_options(request)
-    AuthenticationService.authenticate_token(token)
+    @current_user_id = AuthenticationService.authenticate_token(token)
   rescue
     render status: :unauthorized
   end
