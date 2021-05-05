@@ -4,7 +4,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :categories, only: [:index, :create, :update, :destroy]
       resources :subcategories, only: [:index, :create, :update, :destroy]
-      resources :products, only: [:index, :create, :update, :destroy]
+      resources :products, only: [:index, :create, :update, :destroy] do
+        collection do
+          get 'search'
+        end
+      end
+      resources :shopping_lists, only: [:index, :create]
+      resources :list_items, only: [:index, :create]
       resources :stats, only: [:index]
       resources :users, only: [:index, :create, :destroy]
 

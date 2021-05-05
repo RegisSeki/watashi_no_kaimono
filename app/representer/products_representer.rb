@@ -9,7 +9,9 @@ class ProductsRepresenter
         id: product.id,
         name: product.name,
         category: product.subcategory.category.name,
-        subcategory: product.subcategory.name
+        subcategory: product.subcategory.name,
+        code: product.code,
+        img_url: product.img_url
       }
     end
   end

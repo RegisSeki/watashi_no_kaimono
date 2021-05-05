@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_29_151254) do
+ActiveRecord::Schema.define(version: 2021_05_05_144143) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,12 +22,39 @@ ActiveRecord::Schema.define(version: 2021_04_29_151254) do
     t.string "description"
   end
 
+  create_table "list_items", force: :cascade do |t|
+    t.bigint "shopping_list_id", null: false
+    t.bigint "product_id", null: false
+    t.float "required_quantity", default: 1.0, null: false
+    t.float "purchased_quantity"
+    t.float "price"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_list_items_on_product_id"
+    t.index ["shopping_list_id", "product_id"], name: "index_list_items_on_shopping_list_id_and_product_id"
+    t.index ["shopping_list_id"], name: "index_list_items_on_shopping_list_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "subcategory_id"
+    t.string "code"
+    t.string "img_url"
+    t.index ["code"], name: "index_products_on_code", unique: true
+    t.index ["name"], name: "index_products_on_name", unique: true
     t.index ["subcategory_id"], name: "index_products_on_subcategory_id"
+  end
+
+  create_table "shopping_lists", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "status", default: "opened", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id", "name"], name: "index_shopping_lists_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_shopping_lists_on_user_id"
   end
 
   create_table "subcategories", force: :cascade do |t|
@@ -49,6 +76,9 @@ ActiveRecord::Schema.define(version: 2021_04_29_151254) do
     t.boolean "valid_email"
   end
 
+  add_foreign_key "list_items", "products"
+  add_foreign_key "list_items", "shopping_lists"
   add_foreign_key "products", "subcategories"
+  add_foreign_key "shopping_lists", "users"
   add_foreign_key "subcategories", "categories"
 end

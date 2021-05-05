@@ -12,12 +12,12 @@ module Api
       end
 
       def create
-      	product = Product.new(product_params)
-
-      	if product.save
-      		render json: ProductRepresenter.new(product).as_json, status: :created
-      	else
-      		render json: product.errors, status: :unprocessable_entity
+        begin
+        	product = Product.new(product_params)
+        	product.save!
+          render json: ProductRepresenter.new(product).as_json, status: :created
+      	rescue => e
+      		render json: e.message, status: :unprocessable_entity
       	end
       end
 
@@ -37,6 +37,12 @@ module Api
       	head :no_content
       end
 
+      def search
+        products = Product.limit(limit).offset(params[:offset])
+
+        render json: ProductsRepresenter.new(products).as_json
+      end
+
       private
 
       def limit
@@ -47,7 +53,7 @@ module Api
       end
 
       def product_params
-      	params.require(:product).permit(:name, :subcategory_id)
+      	params.require(:product).permit(:name, :code, :img_url, :subcategory_id)
       end
     end
   end

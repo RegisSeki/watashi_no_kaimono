@@ -4,6 +4,8 @@ class User < ApplicationRecord
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, :on => :create
   has_secure_password
 
+  has_many :shopping_lists
+
   def self.update_token_date(user_id)
     user = User.find(user_id)
     user.update(token_date: Time.zone.now)
